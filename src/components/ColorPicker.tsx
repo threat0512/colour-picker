@@ -11,6 +11,7 @@ export default function ColorPicker({ onChange }: ColorPickerProps) {
   const [hue, setHue] = useState(270);
   const [isDraggingGradient, setIsDraggingGradient] = useState(false);
   const [isDraggingHue, setIsDraggingHue] = useState(false);
+  const [hexInput, setHexInput] = useState('');
 
   const gradientRef = useRef<HTMLDivElement>(null);
   const hueRef = useRef<HTMLDivElement>(null);
@@ -20,6 +21,9 @@ export default function ColorPicker({ onChange }: ColorPickerProps) {
     { r: 255, g: 192, b: 203 },
     { r: 173, g: 216, b: 230 },
     { r: 255, g: 255, b: 224 },
+    { r: 144, g: 238, b: 144 },
+    { r: 255, g: 218, b: 185 },
+    { r: 221, g: 160, b: 221 },
   ];
 
   const rgbToHex = (r: number, g: number, b: number): string => {
@@ -27,6 +31,43 @@ export default function ColorPicker({ onChange }: ColorPickerProps) {
       const hex = Math.round(x).toString(16);
       return hex.length === 1 ? '0' + hex : hex;
     }).join('').toUpperCase();
+  };
+
+  const hexToRgb = (hex: string): { r: number; g: number; b: number } | null => {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16)
+    } : null;
+  };
+
+  const rgbToHsv = (r: number, g: number, b: number): { h: number; s: number; v: number } => {
+    r /= 255;
+    g /= 255;
+    b /= 255;
+
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    const diff = max - min;
+
+    let h = 0;
+    const s = max === 0 ? 0 : diff / max;
+    const v = max;
+
+    if (diff !== 0) {
+      if (max === r) {
+        h = 60 * (((g - b) / diff) % 6);
+      } else if (max === g) {
+        h = 60 * (((b - r) / diff) + 2);
+      } else {
+        h = 60 * (((r - g) / diff) + 4);
+      }
+    }
+
+    if (h < 0) h += 360;
+
+    return { h, s, v };
   };
 
   const hsvToRgb = (h: number, s: number, v: number): { r: number; g: number; b: number } => {
@@ -125,7 +166,68 @@ export default function ColorPicker({ onChange }: ColorPickerProps) {
 
   const handleColorClick = (color: { r: number; g: number; b: number }) => {
     setSelectedColor(color);
+    setHexInput('');
+
+    const hsv = rgbToHsv(color.r, color.g, color.b);
+    setHue(hsv.h);
+
+    if (gradientRef.current) {
+      const rect = gradientRef.current.getBoundingClientRect();
+      setGradientPosition({
+        x: hsv.s * rect.width,
+        y: (1 - hsv.v) * rect.height
+      });
+    }
+
     onChange?.({ hex: rgbToHex(color.r, color.g, color.b), ...color });
+  };
+
+  const handleHexChange = (value: string) => {
+    setHexInput(value);
+
+    if (value.length === 7 || (value.length === 6 && !value.startsWith('#'))) {
+      const normalizedHex = value.startsWith('#') ? value : '#' + value;
+      const rgb = hexToRgb(normalizedHex);
+
+      if (rgb) {
+        setSelectedColor(rgb);
+        const hsv = rgbToHsv(rgb.r, rgb.g, rgb.b);
+        setHue(hsv.h);
+
+        if (gradientRef.current) {
+          const rect = gradientRef.current.getBoundingClientRect();
+          setGradientPosition({
+            x: hsv.s * rect.width,
+            y: (1 - hsv.v) * rect.height
+          });
+        }
+
+        onChange?.({ hex: normalizedHex, ...rgb });
+      }
+    }
+  };
+
+  const handleRgbChange = (channel: 'r' | 'g' | 'b', value: string) => {
+    const numValue = parseInt(value);
+
+    if (!isNaN(numValue) && numValue >= 0 && numValue <= 255) {
+      const newColor = { ...selectedColor, [channel]: numValue };
+      setSelectedColor(newColor);
+      setHexInput('');
+
+      const hsv = rgbToHsv(newColor.r, newColor.g, newColor.b);
+      setHue(hsv.h);
+
+      if (gradientRef.current) {
+        const rect = gradientRef.current.getBoundingClientRect();
+        setGradientPosition({
+          x: hsv.s * rect.width,
+          y: (1 - hsv.v) * rect.height
+        });
+      }
+
+      onChange?.({ hex: rgbToHex(newColor.r, newColor.g, newColor.b), ...newColor });
+    }
   };
 
   return (
@@ -197,18 +299,21 @@ export default function ColorPicker({ onChange }: ColorPickerProps) {
           <label className="block text-xs font-semibold text-gray-700 mb-1">HEX</label>
           <input
             type="text"
-            value={rgbToHex(selectedColor.r, selectedColor.g, selectedColor.b)}
-            readOnly
+            value={hexInput || rgbToHex(selectedColor.r, selectedColor.g, selectedColor.b)}
+            onChange={(e) => handleHexChange(e.target.value)}
             className="w-full px-2 py-2 text-sm font-mono border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+            placeholder="#000000"
           />
         </div>
 
         <div>
           <label className="block text-xs font-semibold text-gray-700 mb-1">R</label>
           <input
-            type="text"
+            type="number"
+            min="0"
+            max="255"
             value={Math.round(selectedColor.r)}
-            readOnly
+            onChange={(e) => handleRgbChange('r', e.target.value)}
             className="w-full px-2 py-2 text-sm text-center border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
           />
         </div>
@@ -216,9 +321,11 @@ export default function ColorPicker({ onChange }: ColorPickerProps) {
         <div>
           <label className="block text-xs font-semibold text-gray-700 mb-1">G</label>
           <input
-            type="text"
+            type="number"
+            min="0"
+            max="255"
             value={Math.round(selectedColor.g)}
-            readOnly
+            onChange={(e) => handleRgbChange('g', e.target.value)}
             className="w-full px-2 py-2 text-sm text-center border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
           />
         </div>
@@ -226,9 +333,11 @@ export default function ColorPicker({ onChange }: ColorPickerProps) {
         <div>
           <label className="block text-xs font-semibold text-gray-700 mb-1">B</label>
           <input
-            type="text"
+            type="number"
+            min="0"
+            max="255"
             value={Math.round(selectedColor.b)}
-            readOnly
+            onChange={(e) => handleRgbChange('b', e.target.value)}
             className="w-full px-2 py-2 text-sm text-center border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
           />
         </div>
