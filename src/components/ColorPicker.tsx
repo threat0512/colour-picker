@@ -23,7 +23,6 @@ export default function ColorPicker({ onChange }: ColorPickerProps) {
     { r: 255, g: 255, b: 224 },
     { r: 144, g: 238, b: 144 },
     { r: 255, g: 218, b: 185 },
-    { r: 221, g: 160, b: 221 },
   ];
 
   const rgbToHex = (r: number, g: number, b: number): string => {
@@ -295,50 +294,51 @@ export default function ColorPicker({ onChange }: ColorPickerProps) {
 
       {/* Color Values */}
       <div className="grid grid-cols-4 gap-3">
-        <div className="col-span-1">
-          <label className="block text-xs font-semibold text-gray-700 mb-1">HEX</label>
+        <div>
+          <label className="block text-xs font-semibold text-gray-700 mb-1.5">HEX</label>
           <input
             type="text"
             value={hexInput || rgbToHex(selectedColor.r, selectedColor.g, selectedColor.b)}
             onChange={(e) => handleHexChange(e.target.value)}
-            className="w-full px-2 py-2 text-sm font-mono border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="w-full px-3 py-2.5 text-sm font-mono border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
             placeholder="#000000"
+            maxLength={7}
           />
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1">R</label>
+          <label className="block text-xs font-semibold text-gray-700 mb-1.5">R</label>
           <input
             type="number"
             min="0"
             max="255"
             value={Math.round(selectedColor.r)}
             onChange={(e) => handleRgbChange('r', e.target.value)}
-            className="w-full px-2 py-2 text-sm text-center border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="w-full px-2 py-2.5 text-sm text-center border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1">G</label>
+          <label className="block text-xs font-semibold text-gray-700 mb-1.5">G</label>
           <input
             type="number"
             min="0"
             max="255"
             value={Math.round(selectedColor.g)}
             onChange={(e) => handleRgbChange('g', e.target.value)}
-            className="w-full px-2 py-2 text-sm text-center border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="w-full px-2 py-2.5 text-sm text-center border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1">B</label>
+          <label className="block text-xs font-semibold text-gray-700 mb-1.5">B</label>
           <input
             type="number"
             min="0"
             max="255"
             value={Math.round(selectedColor.b)}
             onChange={(e) => handleRgbChange('b', e.target.value)}
-            className="w-full px-2 py-2 text-sm text-center border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="w-full px-2 py-2.5 text-sm text-center border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
           />
         </div>
       </div>
