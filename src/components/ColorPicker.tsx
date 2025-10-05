@@ -19,7 +19,7 @@ export default function ColorPicker({ onChange }: ColorPickerProps) {
   const recentColors = [
     { r: 255, g: 255, b: 255 },
     { r: 255, g: 192, b: 203 },
-    { r: 173, g: 216, b: 230 },
+    { r: 173, g: 216, b: 230 }, 
     { r: 255, g: 255, b: 224 },
     { r: 144, g: 238, b: 144 },
     { r: 255, g: 218, b: 185 },
@@ -293,55 +293,62 @@ export default function ColorPicker({ onChange }: ColorPickerProps) {
       </div>
 
       {/* Color Values */}
-      <div className="grid grid-cols-4 gap-3">
-        <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1.5">HEX</label>
-          <input
-            type="text"
-            value={hexInput || rgbToHex(selectedColor.r, selectedColor.g, selectedColor.b)}
-            onChange={(e) => handleHexChange(e.target.value)}
-            className="w-full px-3 py-2.5 text-sm font-mono border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
-            placeholder="#000000"
-            maxLength={7}
-          />
-        </div>
+<div className="mt-4">
+  <div className="flex border border-gray-300 rounded-lg overflow-hidden">
+    {/* HEX (wider) */}
+    <div className="flex flex-col flex-[1.5] border-r border-gray-300">
+      <label className="text-[10px] font-semibold text-gray-700 px-2 pt-1">HEX</label>
+      <input
+        type="text"
+        value={hexInput || rgbToHex(selectedColor.r, selectedColor.g, selectedColor.b)}
+        onChange={(e) => handleHexChange(e.target.value)}
+        className="w-full px-2 pb-1 text-sm font-mono bg-white focus:outline-none text-center"
+        placeholder="#000000"
+        maxLength={7}
+      />
+    </div>
 
-        <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1.5">R</label>
-          <input
-            type="number"
-            min="0"
-            max="255"
-            value={Math.round(selectedColor.r)}
-            onChange={(e) => handleRgbChange('r', e.target.value)}
-            className="w-full px-2 py-2.5 text-sm text-center border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
-          />
-        </div>
+    {/* R */}
+    <div className="flex flex-col flex-1 border-r border-gray-300">
+      <label className="text-[10px] font-semibold text-gray-700 px-2 pt-1">R</label>
+      <input
+        type="number"
+        min="0"
+        max="255"
+        value={Math.round(selectedColor.r)}
+        onChange={(e) => handleRgbChange('r', e.target.value)}
+        className="w-full px-2 pb-1 text-sm bg-white focus:outline-none text-center"
+      />
+    </div>
 
-        <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1.5">G</label>
-          <input
-            type="number"
-            min="0"
-            max="255"
-            value={Math.round(selectedColor.g)}
-            onChange={(e) => handleRgbChange('g', e.target.value)}
-            className="w-full px-2 py-2.5 text-sm text-center border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
-          />
-        </div>
+    {/* G */}
+    <div className="flex flex-col flex-1 border-r border-gray-300">
+      <label className="text-[10px] font-semibold text-gray-700 px-2 pt-1">G</label>
+      <input
+        type="number"
+        min="0"
+        max="255"
+        value={Math.round(selectedColor.g)}
+        onChange={(e) => handleRgbChange('g', e.target.value)}
+        className="w-full px-2 pb-1 text-sm bg-white focus:outline-none text-center"
+      />
+    </div>
 
-        <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1.5">B</label>
-          <input
-            type="number"
-            min="0"
-            max="255"
-            value={Math.round(selectedColor.b)}
-            onChange={(e) => handleRgbChange('b', e.target.value)}
-            className="w-full px-2 py-2.5 text-sm text-center border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
-          />
-        </div>
-      </div>
+    {/* B */}
+    <div className="flex flex-col flex-1">
+      <label className="text-[10px] font-semibold text-gray-700 px-2 pt-1">B</label>
+      <input
+        type="number"
+        min="0"
+        max="255"
+        value={Math.round(selectedColor.b)}
+        onChange={(e) => handleRgbChange('b', e.target.value)}
+        className="w-full px-2 pb-1 text-sm bg-white focus:outline-none text-center"
+      />
+    </div>
+  </div>
+</div>
+
     </div>
   );
 }
