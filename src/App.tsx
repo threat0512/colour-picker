@@ -1,3 +1,4 @@
+import { Analytics } from '@vercel/analytics/react';
 import ColorPicker from './components/ColorPicker';
 
 function App() {
@@ -6,6 +7,7 @@ function App() {
       <ColorPicker
         onChange={(color) => console.log('Selected color:', color)}
       />
+      <Analytics />
     </div>
   );
 }
